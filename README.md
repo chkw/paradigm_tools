@@ -22,8 +22,11 @@ data requirements
 	  - use `commonColumnOrder.py`
 	- **Are the features (genes) required to be common across data files as well as in the same order?**
 	  - use `commonRowOrder.py`
-	- The expression data should be gene-wise, mean-center normalized.
-	  - `Rscript normalize.r mRNA_matrix.tab mean_shift row > mRNA_matrix.meanshifted.tab`
+	- normalizing expression data
+	  - If no match normal data is available, normalize against the cohort itself using a gene-wise, mean-center method.
+	    - `Rscript normalize.r mRNA_matrix.tab mean_shift row > mRNA_matrix.meanshifted.tab`
+	  - If normal data is available, then normalize against the normal data.
+	    - **(Do we have a script for doing this?)**
     - **Is there any normalization requirement for copy number data?**
 
 parameters
@@ -45,4 +48,3 @@ PARADIGM results
 
 (constituent pathways most enriched for changed activity level)
 
-(Pathmark?)
