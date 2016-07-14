@@ -1,0 +1,14 @@
+# dockerize tools for paradigm
+# These are python tools for evidence file preparation.
+# run it with something like:
+# docker run -it -v `pwd`/data:/data paradigm-tools-python python ./tools/commonRowOrder.py data/someDataFile.tab
+# The -v part binds the host data directory to a directory in the container by the same name, so input and output are available on both sides of the docker.
+
+FROM python:2
+MAINTAINER chrisw
+
+RUN mkdir tools
+COPY ./scripts/*.py ./tools/
+
+# default command lists available tools
+CMD ["find", "./tools", "-type", "f"]
