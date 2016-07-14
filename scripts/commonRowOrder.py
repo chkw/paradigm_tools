@@ -5,9 +5,6 @@
 # imports
 from optparse import OptionParser
 import sys
-import csv
-import os
-import errno
 
 # global vars
 

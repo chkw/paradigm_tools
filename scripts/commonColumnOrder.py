@@ -7,7 +7,6 @@ from optparse import OptionParser
 import sys
 import csv
 import os
-import errno
 from sets import Set
 from collections import deque
 
