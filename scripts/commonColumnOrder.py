@@ -102,7 +102,7 @@ def main():
 		fileFieldNames.reverse()
 
 		with open(filePath + fileNameSuffix, 'w') as csvfile:
-			writer = csv.DictWriter(csvfile, delimiter="\t", fieldnames=fileFieldNames, extrasaction="ignore")
+			writer = csv.DictWriter(csvfile, delimiter="\t", lineterminator="\n", fieldnames=fileFieldNames, extrasaction="ignore")
 			writer.writeheader()
 
 			processedLines = 1
