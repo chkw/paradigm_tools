@@ -1,5 +1,5 @@
 # dockerize tools for paradigm
-# These are python tools for evidence file preparation.
+# These are tools for evidence file preparation.
 # run it with something like:
 # docker run -it -v `pwd`/data:/data stuartlab/paradigm-tools-python python ./tools/commonRowOrder.py data/file1.tab data/file2.tab
 # The -v part binds the host data directory to a directory in the container by the same name, so input and output are available on both sides of the docker.
@@ -8,8 +8,22 @@
 FROM python:2
 MAINTAINER chrisw
 
+## Remain current
+RUN apt-get update -qq
+RUN apt-get dist-upgrade -y
+
+# python tools
+RUN pip install numpy
+RUN pip install scipy
+
 RUN mkdir tools
 COPY ./scripts/*.py ./tools/
+
+# R tools
+RUN apt-get install -y --no-install-recommends r-base r-base-dev r-recommended littler
+RUN ln -s /usr/share/doc/littler/examples/install.r /usr/local/bin/install.r
+
+COPY ./scripts/*.r ./tools/
 
 # default command lists available tools
 CMD ["find", "./tools", "-type", "f"]

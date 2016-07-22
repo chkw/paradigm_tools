@@ -86,6 +86,8 @@ def main():
 	log("%s columns in common\n" % (str(len(commonCols))))
 	log("first column names: %s\n" % (str(firstColDeque)))
 
+ 	myDialect = csv.register_dialect("myDialect", csv.excel_tab, lineterminator="\n")
+
 	# process files
 	for filePath in args:
 		(dirName, dataFileName) = os.path.split(filePath)
