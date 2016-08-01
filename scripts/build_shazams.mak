@@ -33,22 +33,24 @@ HUGO_SYMBOLS=../data/hugo_symbols.tab
 PATHWAY_IPLS_DIR=pathway_ipls
 
 # contrast file with col_1 sample IDs and col_2 with sample group name
-CONTRAST_FILE=small_not_small.tsv
+CONTRAST_FILE=all_samples.tab
 
 # sample group names from CONTRAST_FILE to use for contrast
-SAMPLE_GROUP_1="Not small cell"
-SAMPLE_GROUP_2="Small Cell"
+SAMPLE_GROUP_1="real"
+# to compare to nulls, use SAMPLE_GROUP_2="Null"
+#SAMPLE_GROUP_2="Small Cell"
+SAMPLE_GROUP_2="null"
 
-# copy index.html to the html directory
-copy_index_html_to_dir.done: build_shazams.done
-	cp index.html html/. ;
-	\
-	date >> $@ ;
-	\
+HTML_DIR=$(SAMPLE_GROUP_1)_$(SAMPLE_GROUP_2)_HTML
+
+#: MAKE EVERYTHING !
+all: all_samples.tab build_shazams.done
 
 #: build the pathway shazam plots and html as well as the summary html page
 build_shazams.done: filter_pathway_ipls.done
-	python htmlFG.py \
+	mkdir $(HTML_DIR) ;
+	\
+	bash build_shazam_htmls.sh \
 		$(PATHWAY_IPLS_DIR) \
 		$(PATHWAYS_DIR) \
 		$(PATHWAY_LIST_FILE) \
@@ -56,6 +58,12 @@ build_shazams.done: filter_pathway_ipls.done
 		$(SAMPLE_GROUP_1) \
 		$(SAMPLE_GROUP_2) \
 		index.html ;
+	\
+	mv index.html html/. ;
+	\
+	mv html/* $(HTML_DIR)/. ;
+	\
+	rm -rf html ;
 	\
 	date >> $@ ;
 	\
@@ -89,6 +97,21 @@ filter_pathway_ipls.done: hugo_only_combined_ipls.done
 	date >> $@ ;
 	\
 
+#: get all sample names, including nulls
+all_samples.tab: hugo_only_combined_ipls.done
+	head -n 1 $(COMBINED_IPL_DIR)/$(COMBINED_IPL_FILE)_HUGO_ONLY \
+	| fmt -1 \
+	| awk 'BEGIN{FS="\t"; OFS=FS;}{input=$$0; if ($$1~/^na_iter_/){category="null";} else{category="real";} print input FS category;}END{}' \
+	> 1.tmp ;
+	\
+	tail -n +2 1.tmp \
+	> 2.tmp ;
+	\
+	mv 2.tmp $@ ;
+	\
+	rm -f 1.tmp 2.tmp ;
+	\
+
 #: filter the merged IPL file down to just HUGO symbol features
 hugo_only_combined_ipls.done:
 	python $(LIB_DIR)/filterRowNames.py \
@@ -100,9 +123,9 @@ hugo_only_combined_ipls.done:
 	\
 
 clean:
-	rm -f index.html hugo_only_combined_ipls.done filter_pathway_ipls.done build_shazams.done copy_index_html_to_dir.done ;
+	rm -f all_samples.tab index.html hugo_only_combined_ipls.done filter_pathway_ipls.done build_shazams.done copy_index_html_to_dir.done ;
 	\
-	rm -rf html $(PATHWAY_IPLS_DIR) ;
+	rm -rf $(HTML_DIR) html $(PATHWAY_IPLS_DIR) ;
 	\
 	rm -f $(wildcard *.tmp) ;
 	\
